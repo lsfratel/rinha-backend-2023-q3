@@ -1,0 +1,64 @@
+version: '3.5'
+
+services:
+  api1:
+    build: .
+    network_mode: "host"
+    environment:
+      - PORT=3000
+      - ENV=production
+    deploy:
+      resources:
+        limits:
+          cpus: '0.20'
+          memory: '0.425GB'
+
+  api2:
+    build: .
+    network_mode: "host"
+    environment:
+      - PORT=3001
+      - ENV=production
+    deploy:
+      resources:
+        limits:
+          cpus: '0.20'
+          memory: '0.425GB'
+
+  memcached:
+    image: memcached
+    entrypoint:
+      - memcached
+      - m 64
+    network_mode: "host"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.10'
+          memory: '0.15GB'
+
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: rinhadb
+    network_mode: "host"
+    volumes:
+      - ./db.sql:/docker-entrypoint-initdb.d/init.sql
+    deploy:
+      resources:
+        limits:
+          cpus: '0.90'
+          memory: '1.5GB'
+
+  lighttpd:
+    image: jitesoft/lighttpd
+    network_mode: "host"
+    volumes:
+      - ./lighttpd.conf:/etc/lighttpd/lighttpd.conf
+    deploy:
+      resources:
+        limits:
+          cpus: '0.10'
+          memory: '0.5GB'
